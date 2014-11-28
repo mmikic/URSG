@@ -11,6 +11,20 @@ postajaPodatak(postaja, podatak)
         npr.
         Gorice-Nova Gradiška    "gorice-nova-gradiska"
         Zagreb Grič             "zagreb-gric"
+        
+        dodatno, moguce je za sljedece gradove samo upisati ime grada i dobiti prvi rezultat vezan
+        
+        npr.
+        "zagreb"        > "zagreb gric" ako je dostupno, inace "zagreb-maksimir" ako je dostupno, inace "zagreb-aerodrom" 
+        
+        popis gradova:
+        Zagreb
+        Split
+        Zadar
+        Osijek
+        Rijeka
+        Pula
+        Dubrovnik
     
     Naravno, ukoliko su podaci dostupni
 
@@ -26,7 +40,7 @@ postajaPodatak(postaja, podatak)
         tendencija_tlaka
         vrijeme
     
----------------    
+--------------------------------------    
     
 TO DO:
 
@@ -55,20 +69,46 @@ class MeteoHR:
         return self.podaci
         
 
+    def pretraziKljuc(self, kljuc):
+        
+        kljucevi = {
+            kljuc: kljuc if kljuc in self.podaci else None,
+            'zagreb': 'zagreb-gric' if 'zagreb-gric' in self.podaci else ('zagreb-maksimir' if 'zagreb-maksimir' in self.podaci else ('zagreb-aer' if 'zagreb-aer' in self.podaci else None)),
+            'split': 'split' if 'split' in self.podaci else ('split-aer' if 'split-aer' in self.podaci else None),
+            'rijeka': 'rijeka' if 'rijeka' in self.podaci else ('rijeka-aer' if 'rijeka-aer' in self.podaci else None),
+            'pula': 'pula' if 'pula' in self.podaci else ('pula-aer' if 'pula-aer' in self.podaci else None),
+            'zadar': 'zadar' if 'zadar' in self.podaci else ('zadar-aer' if 'zadar-aer' in self.podaci else None),
+            'osijek': 'osijek' if 'osijek' in self.podaci else ('osijek-aer' if 'osijek-aer' in self.podaci else None),
+            'dubrovnik': 'dubrovnik' if 'dubrovnik' in self.podaci else ('dubrovnik-aer' if 'dubrovnik-aer' in self.podaci else None)
+        }
+        
+        return kljucevi[kljuc]
+        
+
     def postajaPodaci(self, postaja):
         
-        return self.podaci.get(postaja, "Nisu dostupni podaci o postaji")
-    
-    
-    def postajaPodatak(self, postaja, podatak):
+        kljuc = self.pretraziKljuc(postaja)
         
-        if self.podaci.get(postaja, False) == False:
+        if kljuc == None: 
             
             return "Nisu dostupni podaci o postaji"
             
         else:
             
-            return self.podaci[postaja][podatak]
+            return self.podaci[kljuc]
+    
+    
+    def postajaPodatak(self, postaja, podatak):
+        
+        kljuc = self.pretraziKljuc(postaja)
+        
+        if kljuc == None:
+            
+            return "Nisu dostupni podaci o postaji"
+            
+        else:
+            
+            return self.podaci[kljuc][podatak]
         
         
     def dohvatiPodatke(self, izvor):
@@ -121,5 +161,4 @@ class MeteoHR:
 
 meteo = MeteoHR()
 
-print meteo.postajaPodaci('zagreb-maksimir')
-print meteo.postajaPodatak('zagreb-maksimir', 'temperatura_zraka')
+print meteo.postajaPodatak('dubrovnik', 'temperatura_zraka')
