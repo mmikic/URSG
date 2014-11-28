@@ -4,6 +4,30 @@ import re
 
 """
 
+postajaPodatak(postaja, podatak)
+
+    Vrijednosti argumenta postaja je ime postaje malim slovima, razmak pretvoren u -, bez dijakritika
+    
+        npr.
+        Gorice-Nova Gradiška    "gorice-nova-gradiska"
+        Zagreb Grič             "zagreb-gric"
+    
+    Naravno, ukoliko su podaci dostupni
+
+    -------------
+
+    Vrijednosti argumenta podatak:
+
+        smjer_vjetra
+        brzina_vjetra
+        temperatura_zraka
+        relativna_vlaznost
+        tlak_zraka
+        tendencija_tlaka
+        vrijeme
+    
+---------------    
+    
 TO DO:
 
 -   dokumentirati funkcije: istovarPodataka(), postajaPodatak(), postajaPodaci()
@@ -25,7 +49,6 @@ class MeteoHR:
         
         self.izvor = izvor
         self.dohvatiPodatke(izvor)
-    
     
     def istovarPodataka(self):
         
@@ -61,11 +84,13 @@ class MeteoHR:
     def puz(self, tekst):
         
         tekst = unicode(tekst).lower()
-        tekst = tekst.replace(unicode('č', errors="ignore"), unicode('c', errors="ignore"))
-        tekst = tekst.replace(unicode('ć', errors="ignore"), unicode('c', errors="ignore"))
-        tekst = tekst.replace(unicode('š', errors="ignore"), unicode('s', errors="ignore"))
-        tekst = tekst.replace(unicode('ž', errors="ignore"), unicode('z', errors="ignore"))
-        tekst = tekst.replace(unicode('đ', errors="ignore"), unicode('d', errors="ignore"))
+        
+        tekst = tekst.replace('č'.decode("utf8"), 'c')
+        tekst = tekst.replace('ć'.decode("utf8"), 'c')
+        tekst = tekst.replace('š'.decode("utf8"), 's')
+        tekst = tekst.replace('ž'.decode("utf8"), 'z')
+        tekst = tekst.replace('đ'.decode("utf8"), 'd')
+        
         tekst = re.sub(r'[^a-z0-9]+', '-', tekst)
         
         return tekst
@@ -87,19 +112,14 @@ class MeteoHR:
         
             naziv_postaje = re.findall(r'<td align="left">&nbsp;(.*?)</td>', postaja[1].strip(), re.M|re.I|re.S) # u [0]
             podaci = re.findall(r'<td>(.*?)</td>', postaja[1].strip(), re.M|re.I|re.S)
-        
+            
             # smjer vjetra, brzina vjetra, temperatura, relativna vlaznost, tlak zraka, tendencija tlaka, vrijeme
             rezultati[self.puz(naziv_postaje[0])] = {'smjer_vjetra': podaci[0], 'brzina_vjetra': podaci[1], 'temperatura_zraka': podaci[2], 'relativna_vlaznost': podaci[3], 'tlak_zraka': podaci[4], 'tendencija_tlaka': (re.findall(r'<font (.*?)>(.*?)</font>', podaci[5], re.M|re.I|re.S)[0][1]), 'vrijeme': podaci[6] }
-        
-        for x in rezultati:
             
-            print x
-            
-        #return rezultati
+        return rezultati
 
 
-meteo = MeteoHR("http://vrijeme.hr/aktpod.php?id=hrvatska_n&param=07")
+meteo = MeteoHR()
 
-print meteo.postajaPodatak("crni-lug-np-risnjak", "temperatura_zraka")
-print meteo.postajaPodatak("hr-kostajnica", "temperatura_zraka")
-print meteo.postajaPodatak("gradiste-zupanja", "temperatura_zraka")
+print meteo.postajaPodaci('zagreb-maksimir')
+print meteo.postajaPodatak('zagreb-maksimir', 'temperatura_zraka')
