@@ -41,16 +41,6 @@ postajaPodatak(postaja, podatak)
         vrijeme
     
 --------------------------------------    
-    
-TO DO:
-
--   dokumentirati funkcije: istovarPodataka(), postajaPodatak(), postajaPodaci()
--   napisati funkciju datum() koja vadi datum i vrijeme podataka
-
--   ne postoji potreba za dohvatiSadrzaj(), trebalo bi napisati funkciju koja returna sadrzaj stranice bez da ga odmah poziva u nesto sljedece
-    bilo bi dobro pohraniti podatke u neku varijablu i dalje se igrati s njom
--   kada se stvori funkcija za dohvacanje sadrzaja, onda je moguce napraviti datum() funkciju uz regex
-
 """
 
 class MeteoHR:
@@ -58,6 +48,7 @@ class MeteoHR:
 
     podaci = dict()
     izvor = ""
+    original = ""
 
     def __init__(self, izvor="http://vrijeme.hr/aktpod.php?id=hrvatska_n"):
         
@@ -113,12 +104,14 @@ class MeteoHR:
         
     def dohvatiPodatke(self, izvor):
     
-        self.podaci = self.dohvatiSadrzaj(izvor)
+        self.podaci = self.sortirajSadrzaj(self.spremiOriginal(urllib2.urlopen(izvor).read().decode("utf8")))
+            
+    
+    def spremiOriginal(self, tekst):
         
-
-    def dohvatiSadrzaj(self, adresa):
-
-        return self.sortirajSadrzaj(urllib2.urlopen(adresa).read().decode("utf8"))
+        self.original = tekst
+        
+        return tekst
     
     
     def puz(self, tekst):
@@ -138,8 +131,10 @@ class MeteoHR:
         
     def datum(self):
         
-        return True
-        #<div class="sadrzajHeader-zuti"><img src="trokutic.gif">Vrijeme u Hrvatskoj 
+        vrijeme = re.findall(r'<div class="sadrzajHeader-zuti"><img src="trokutic.gif">Vrijeme u Hrvatskoj (.*?)</div>', self.original, re.M|re.I|re.S)
+        vrijeme = vrijeme[0].split(' u ')
+        
+        return [vrijeme[0], vrijeme[1][:-2]]
     
     
     def sortirajSadrzaj(self, datoteka):
@@ -162,3 +157,4 @@ class MeteoHR:
 meteo = MeteoHR()
 
 print meteo.postajaPodatak('dubrovnik', 'temperatura_zraka')
+print meteo.datum()
