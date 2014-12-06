@@ -125,13 +125,9 @@ class MeteoHR:
     def puz(self, tekst):
         
         tekst = unicode(tekst).lower()
-        
-        tekst = tekst.replace('č'.decode("utf8"), 'c')
-        tekst = tekst.replace('ć'.decode("utf8"), 'c')
-        tekst = tekst.replace('š'.decode("utf8"), 's')
-        tekst = tekst.replace('ž'.decode("utf8"), 'z')
-        tekst = tekst.replace('đ'.decode("utf8"), 'd')
-        
+
+        tekst = tekst.replace('č'.decode("utf8"), 'c').replace('ć'.decode("utf8"), 'c').replace('š'.decode("utf8"), 's').replace('ž'.decode("utf8"), 'z').replace('đ'.decode("utf8"), 'd')
+
         tekst = re.sub(r'[^a-z0-9]+', '-', tekst)
         
         return tekst
