@@ -3,7 +3,15 @@ import urllib2
 import re
 
 """
+test:
 
+
+meteo = MeteoHR()
+
+print meteo.postajaPodatak('dubrovnik', 'temperatura_zraka')
+print meteo.datum()
+
+-------
 postajaPodatak(postaja, podatak)
 
     Vrijednosti argumenta postaja je ime postaje malim slovima, razmak pretvoren u -, bez dijakritika
@@ -141,20 +149,14 @@ class MeteoHR:
     
         rezultati = dict()
     
-        postaje = re.findall(r'<tr (.*?) align="center">(.*?)</tr>', datoteka, re.M|re.I|re.S)
+        postaje = re.findall(r'<tr .*? align="center">(.*?)</tr>', datoteka, re.M|re.I|re.S)
       
         for postaja in postaje[1:]: 
         
-            naziv_postaje = re.findall(r'<td align="left">&nbsp;(.*?)</td>', postaja[1].strip(), re.M|re.I|re.S) # u [0]
-            podaci = re.findall(r'<td>(.*?)</td>', postaja[1].strip(), re.M|re.I|re.S)
+            naziv_postaje = re.findall(r'<td align="left">&nbsp;(.*?)</td>', postaja.strip(), re.M|re.I|re.S) # u [0]
+            podaci = re.findall(r'<td>(.*?)</td>', postaja.strip(), re.M|re.I|re.S)
             
             # smjer vjetra, brzina vjetra, temperatura, relativna vlaznost, tlak zraka, tendencija tlaka, vrijeme
             rezultati[self.puz(naziv_postaje[0])] = {'smjer_vjetra': podaci[0], 'brzina_vjetra': podaci[1], 'temperatura_zraka': podaci[2], 'relativna_vlaznost': podaci[3], 'tlak_zraka': podaci[4], 'tendencija_tlaka': (re.findall(r'<font (.*?)>(.*?)</font>', podaci[5], re.M|re.I|re.S)[0][1]), 'vrijeme': podaci[6] }
             
         return rezultati
-
-
-meteo = MeteoHR()
-
-print meteo.postajaPodatak('dubrovnik', 'temperatura_zraka')
-print meteo.datum()
